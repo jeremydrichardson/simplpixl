@@ -3,23 +3,14 @@ import type { Editor } from './Editor';
 export class InputController {
   private canvas: HTMLCanvasElement;
   private editor: Editor;
-  private isPanning = false;
-  private panStartX = 0;
-  private panStartY = 0;
   private lastPinchDistance = 0;
   private pointers = new Map<number, { x: number; y: number }>();
-  private spaceHeld = false;
   private drawing = false;
 
   constructor(canvas: HTMLCanvasElement, editor: Editor) {
     this.canvas = canvas;
     this.editor = editor;
     this.bindEvents();
-  }
-
-  setSpaceHeld(held: boolean): void {
-    this.spaceHeld = held;
-    this.canvas.style.cursor = held ? 'grab' : 'crosshair';
   }
 
   destroy(): void {
@@ -61,16 +52,6 @@ export class InputController {
       return;
     }
 
-    if (e.button === 1 || this.spaceHeld) {
-      e.preventDefault();
-      this.isPanning = true;
-      this.panStartX = point.x;
-      this.panStartY = point.y;
-      this.canvas.style.cursor = 'grabbing';
-      this.canvas.setPointerCapture(e.pointerId);
-      return;
-    }
-
     if (e.button === 0) {
       e.preventDefault();
       this.drawing = true;
@@ -88,20 +69,10 @@ export class InputController {
     if (this.pointers.size === 2) {
       const distance = this.getPinchDistance();
       if (this.lastPinchDistance > 0) {
-        const center = this.getPinchCenter();
         const factor = distance / this.lastPinchDistance;
-        this.editor.zoomAtPoint(factor, center.x, center.y);
+        this.editor.zoomBy(factor);
       }
       this.lastPinchDistance = distance;
-      return;
-    }
-
-    if (this.isPanning) {
-      const dx = point.x - this.panStartX;
-      const dy = point.y - this.panStartY;
-      this.editor.panBy(dx, dy);
-      this.panStartX = point.x;
-      this.panStartY = point.y;
       return;
     }
 
@@ -116,15 +87,6 @@ export class InputController {
 
     if (this.pointers.size < 2) {
       this.lastPinchDistance = 0;
-    }
-
-    if (this.isPanning) {
-      this.isPanning = false;
-      this.canvas.style.cursor = this.spaceHeld ? 'grab' : 'crosshair';
-      if (this.canvas.hasPointerCapture(e.pointerId)) {
-        this.canvas.releasePointerCapture(e.pointerId);
-      }
-      return;
     }
 
     if (this.drawing) {
@@ -145,11 +107,8 @@ export class InputController {
 
   private onWheel = (e: WheelEvent): void => {
     e.preventDefault();
-    const rect = this.canvas.getBoundingClientRect();
-    const sx = e.clientX - rect.left;
-    const sy = e.clientY - rect.top;
     const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
-    this.editor.zoomAtPoint(factor, sx, sy);
+    this.editor.zoomBy(factor);
   };
 
   private onContextMenu = (e: Event): void => {
@@ -163,12 +122,5 @@ export class InputController {
     const dx = a!.x - b!.x;
     const dy = a!.y - b!.y;
     return Math.hypot(dx, dy);
-  }
-
-  private getPinchCenter(): { x: number; y: number } {
-    const pts = [...this.pointers.values()];
-    if (pts.length < 2) return { x: 0, y: 0 };
-    const [a, b] = pts;
-    return { x: (a!.x + b!.x) / 2, y: (a!.y + b!.y) / 2 };
   }
 }

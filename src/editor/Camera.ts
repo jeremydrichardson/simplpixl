@@ -13,11 +13,13 @@ export class Camera {
   setViewport(width: number, height: number): void {
     this.viewportWidth = width;
     this.viewportHeight = height;
+    this.recenter();
   }
 
   setDocumentSize(width: number, height: number): void {
     this.documentWidth = width;
     this.documentHeight = height;
+    this.recenter();
   }
 
   screenToPixel(sx: number, sy: number): { x: number; y: number } {
@@ -34,17 +36,15 @@ export class Camera {
     };
   }
 
-  zoomAtPoint(factor: number, sx: number, sy: number): void {
-    const before = this.screenToPixel(sx, sy);
+  zoomBy(factor: number): void {
     this.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, this.zoom * factor));
-    const after = this.pixelToScreen(before.x, before.y);
-    this.panX += sx - after.x;
-    this.panY += sy - after.y;
+    this.recenter();
   }
 
-  panBy(dx: number, dy: number): void {
-    this.panX += dx;
-    this.panY += dy;
+  recenter(): void {
+    if (this.viewportWidth === 0 || this.viewportHeight === 0) return;
+    this.panX = (this.viewportWidth - this.documentWidth * this.zoom) / 2;
+    this.panY = (this.viewportHeight - this.documentHeight * this.zoom) / 2;
   }
 
   fitToView(): void {
@@ -53,8 +53,7 @@ export class Camera {
     const scaleY = this.viewportHeight / this.documentHeight;
     this.zoom = Math.min(scaleX, scaleY, MAX_ZOOM);
     this.zoom = Math.max(this.zoom, MIN_ZOOM);
-    this.panX = (this.viewportWidth - this.documentWidth * this.zoom) / 2;
-    this.panY = (this.viewportHeight - this.documentHeight * this.zoom) / 2;
+    this.recenter();
   }
 
   getZoomPercent(): number {

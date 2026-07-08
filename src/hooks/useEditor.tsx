@@ -24,7 +24,6 @@ export function EditorProvider({
   const showGrid = useEditorStore((s) => s.showGrid);
   const gridZoomThreshold = useEditorStore((s) => s.gridZoomThreshold);
   const whiteBackground = useEditorStore((s) => s.whiteBackground);
-  const isPanning = useEditorStore((s) => s.isPanning);
   const activeLayerId = useEditorStore((s) => s.activeLayerId);
   const setZoomPercent = useEditorStore((s) => s.setZoomPercent);
   const setActiveLayerId = useEditorStore((s) => s.setActiveLayerId);
@@ -77,10 +76,6 @@ export function EditorProvider({
   }, [activeLayerId]);
 
   useEffect(() => {
-    editorRef.current?.setPanMode(isPanning);
-  }, [isPanning]);
-
-  useEffect(() => {
     const manager = createKeyboardManager();
 
     manager.register({ key: 'b', handler: () => useEditorStore.getState().setActiveTool('pencil') });
@@ -90,26 +85,10 @@ export function EditorProvider({
     registerModShortcut(manager, 'z', false, () => editorRef.current?.undo());
     registerModShortcut(manager, 'z', true, () => editorRef.current?.redo());
 
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !e.repeat) {
-        e.preventDefault();
-        useEditorStore.getState().setIsPanning(true);
-      }
-    };
-    const onKeyUp = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        useEditorStore.getState().setIsPanning(false);
-      }
-    };
-
     manager.attach();
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
 
     return () => {
       manager.detach();
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup', onKeyUp);
     };
   }, []);
 

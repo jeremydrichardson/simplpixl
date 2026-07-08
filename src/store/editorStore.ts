@@ -8,7 +8,6 @@ interface EditorStore {
   showGrid: boolean;
   gridZoomThreshold: number;
   whiteBackground: boolean;
-  isPanning: boolean;
   activeLayerId: string | null;
   zoomPercent: number;
   showProjectBrowser: boolean;
@@ -20,7 +19,6 @@ interface EditorStore {
   setShowGrid: (show: boolean) => void;
   setGridZoomThreshold: (threshold: number) => void;
   setWhiteBackground: (white: boolean) => void;
-  setIsPanning: (panning: boolean) => void;
   setActiveLayerId: (id: string | null) => void;
   setZoomPercent: (percent: number) => void;
   setShowProjectBrowser: (show: boolean) => void;
@@ -34,7 +32,6 @@ export const useEditorStore = create<EditorStore>((set) => ({
   showGrid: true,
   gridZoomThreshold: 8,
   whiteBackground: false,
-  isPanning: false,
   activeLayerId: null,
   zoomPercent: 100,
   showProjectBrowser: false,
@@ -46,7 +43,6 @@ export const useEditorStore = create<EditorStore>((set) => ({
   setShowGrid: (show) => set({ showGrid: show }),
   setGridZoomThreshold: (threshold) => set({ gridZoomThreshold: threshold }),
   setWhiteBackground: (white) => set({ whiteBackground: white }),
-  setIsPanning: (panning) => set({ isPanning: panning }),
   setActiveLayerId: (id) => set({ activeLayerId: id }),
   setZoomPercent: (percent) => set({ zoomPercent: percent }),
   setShowProjectBrowser: (show) => set({ showProjectBrowser: show }),
