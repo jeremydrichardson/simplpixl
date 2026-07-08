@@ -50,7 +50,6 @@ pnpm dev
 | G | Fill |
 | Ctrl/Cmd + Z | Undo |
 | Ctrl/Cmd + Shift + Z | Redo |
-| Space (hold) | Pan |
 | Scroll wheel | Zoom |
 
 ## Project Format

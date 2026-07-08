@@ -35,6 +35,7 @@ export class Editor {
   private renderOptions: RenderOptions = { showGrid: true, gridZoomThreshold: 8, whiteBackground: false };
   private primaryColorIndex = 1;
   private isDirty = false;
+  private needsInitialFit = true;
 
   constructor(canvas: HTMLCanvasElement, options: EditorOptions = {}) {
     this.document = Document.create(options.width ?? 32, options.height ?? 32, options.name);
@@ -108,8 +109,9 @@ export class Editor {
   resize(viewportWidth: number, viewportHeight: number): void {
     this.camera.setViewport(viewportWidth, viewportHeight);
     this.renderer.resize(viewportWidth, viewportHeight);
-    if (this.camera.zoom === 1 && this.camera.panX === 0 && this.camera.panY === 0) {
+    if (this.needsInitialFit) {
       this.camera.fitToView();
+      this.needsInitialFit = false;
     }
     this.render();
   }
@@ -124,26 +126,18 @@ export class Editor {
     this.notifyChange();
   }
 
-  zoomAtPoint(factor: number, sx: number, sy: number): void {
-    this.camera.zoomAtPoint(factor, sx, sy);
+  zoomBy(factor: number): void {
+    this.camera.zoomBy(factor);
     this.render();
     this.notifyChange();
   }
 
   zoomIn(): void {
-    const { viewportWidth, viewportHeight } = this.camera;
-    this.zoomAtPoint(1.1, viewportWidth / 2, viewportHeight / 2);
+    this.zoomBy(1.1);
   }
 
   zoomOut(): void {
-    const { viewportWidth, viewportHeight } = this.camera;
-    this.zoomAtPoint(1 / 1.1, viewportWidth / 2, viewportHeight / 2);
-  }
-
-  panBy(dx: number, dy: number): void {
-    this.camera.panBy(dx, dy);
-    this.render();
-    this.notifyChange();
+    this.zoomBy(1 / 1.1);
   }
 
   undo(): boolean {
@@ -389,9 +383,5 @@ export class Editor {
 
   cancelTool(): void {
     this.activeTool.cancel(this.createToolContext());
-  }
-
-  setPanMode(enabled: boolean): void {
-    this.inputController.setSpaceHeld(enabled);
   }
 }

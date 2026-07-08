@@ -22,6 +22,16 @@ describe('Camera', () => {
     const screen = camera.pixelToScreen(1, 2);
     expect(screen).toEqual({ x: 15, y: 25 });
   });
+
+  it('keeps the document centered after zooming', () => {
+    const camera = new Camera();
+    camera.setViewport(200, 100);
+    camera.setDocumentSize(32, 32);
+    camera.zoomBy(2);
+
+    expect(camera.panX).toBe((200 - 32 * camera.zoom) / 2);
+    expect(camera.panY).toBe((100 - 32 * camera.zoom) / 2);
+  });
 });
 
 describe('History', () => {
