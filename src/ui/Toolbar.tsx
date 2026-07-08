@@ -39,6 +39,14 @@ export function Toolbar({
     getEditor()?.undo();
   };
 
+  const handleZoomIn = () => {
+    getEditor()?.zoomIn();
+  };
+
+  const handleZoomOut = () => {
+    getEditor()?.zoomOut();
+  };
+
   return (
     <div className={styles.toolbar}>
       <div className={styles.group}>
@@ -70,7 +78,27 @@ export function Toolbar({
         <button type="button" className={styles.button} onClick={onFitToView}>
           Fit
         </button>
+        <button
+          type="button"
+          className={styles.zoomButton}
+          onClick={handleZoomOut}
+          disabled={zoomPercent <= 100}
+          title="Zoom out"
+          aria-label="Zoom out"
+        >
+          −
+        </button>
         <span className={styles.zoom}>{zoomPercent}%</span>
+        <button
+          type="button"
+          className={styles.zoomButton}
+          onClick={handleZoomIn}
+          disabled={zoomPercent >= 6400}
+          title="Zoom in"
+          aria-label="Zoom in"
+        >
+          +
+        </button>
         <label className={styles.checkbox}>
           <input type="checkbox" checked={showGrid} onChange={(e) => setShowGrid(e.target.checked)} />
           Grid
