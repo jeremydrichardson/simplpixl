@@ -130,6 +130,16 @@ export class Editor {
     this.notifyChange();
   }
 
+  zoomIn(): void {
+    const { viewportWidth, viewportHeight } = this.camera;
+    this.zoomAtPoint(1.1, viewportWidth / 2, viewportHeight / 2);
+  }
+
+  zoomOut(): void {
+    const { viewportWidth, viewportHeight } = this.camera;
+    this.zoomAtPoint(1 / 1.1, viewportWidth / 2, viewportHeight / 2);
+  }
+
   panBy(dx: number, dy: number): void {
     this.camera.panBy(dx, dy);
     this.render();
