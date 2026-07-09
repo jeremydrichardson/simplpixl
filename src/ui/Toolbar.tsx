@@ -15,6 +15,7 @@ interface ToolbarProps {
   onExportPng: () => void;
   onImportPng: () => void;
   onSaveProject: () => void;
+  onExportJson: () => void;
   onOpenProjects: () => void;
 }
 
@@ -23,6 +24,7 @@ export function Toolbar({
   onExportPng,
   onImportPng,
   onSaveProject,
+  onExportJson,
   onOpenProjects,
 }: ToolbarProps) {
   const { getEditor } = useEditorContext();
@@ -125,6 +127,9 @@ export function Toolbar({
         </button>
         <button type="button" className={styles.button} onClick={onExportPng}>
           Export PNG
+        </button>
+        <button type="button" className={styles.button} onClick={onExportJson}>
+          Export JSON
         </button>
       </div>
     </div>

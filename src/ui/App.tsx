@@ -80,16 +80,39 @@ function EditorLayout({ canvasRef }: { canvasRef: React.RefObject<HTMLCanvasElem
     const editor = getEditor();
     if (!editor) return;
     try {
+      let projectName = editor.document.name;
+      
+      if (projectName === 'Untitled' || !projectName.trim()) {
+        const newName = prompt('Enter a name for your project:', projectName);
+        if (newName === null) return;
+        if (!newName.trim()) {
+          alert('Project name cannot be empty');
+          return;
+        }
+        projectName = newName.trim();
+        editor.document.name = projectName;
+      }
+
       const serialized = serializeDocument(editor.document);
       await saveProject({
         id: editor.document.id,
-        name: editor.document.name,
+        name: projectName,
         updatedAt: Date.now(),
         document: serialized,
       });
       editor.clearDirty();
-      console.log('Project saved to database:', editor.document.name);
+      console.log('Project saved to database:', projectName);
+      alert(`Project "${projectName}" saved successfully!`);
+    } catch (error) {
+      console.error('Failed to save project:', error);
+      alert('Failed to save project. Check console for details.');
+    }
+  }, [getEditor]);
 
+  const handleExportJson = useCallback(async () => {
+    const editor = getEditor();
+    if (!editor) return;
+    try {
       const json = documentToJson(editor.document);
       const blob = new Blob([json], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -99,8 +122,8 @@ function EditorLayout({ canvasRef }: { canvasRef: React.RefObject<HTMLCanvasElem
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Failed to save project:', error);
-      alert('Failed to save project. Check console for details.');
+      console.error('Failed to export JSON:', error);
+      alert('Failed to export project. Check console for details.');
     }
   }, [getEditor]);
 
@@ -128,6 +151,7 @@ function EditorLayout({ canvasRef }: { canvasRef: React.RefObject<HTMLCanvasElem
           onExportPng={handleExportPng}
           onImportPng={handleImportPng}
           onSaveProject={handleSaveProject}
+          onExportJson={handleExportJson}
           onOpenProjects={() => setShowProjectBrowser(true)}
         />
       </header>
