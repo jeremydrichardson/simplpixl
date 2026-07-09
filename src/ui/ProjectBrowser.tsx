@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Document } from '../model/Document';
 import { deserializeDocument } from '../model/serialization';
-import { getAllProjects, deleteProject, type ProjectRecord } from '../db/db';
+import { getAllProjects, deleteProject, loadProject, type ProjectRecord } from '../db/db';
 import styles from './ProjectBrowser.module.css';
 
 interface ProjectBrowserProps {
@@ -17,7 +17,8 @@ export function ProjectBrowser({ onOpen, onNew, onClose }: ProjectBrowserProps) 
     getAllProjects().then(setProjects);
   }, []);
 
-  const handleOpen = (project: ProjectRecord) => {
+  const handleOpen = async (project: ProjectRecord) => {
+    await loadProject(project.id);
     onOpen(deserializeDocument(project.document));
     onClose();
   };
