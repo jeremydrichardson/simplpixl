@@ -33,7 +33,14 @@ function EditorLayout({ canvasRef }: { canvasRef: React.RefObject<HTMLCanvasElem
             name: editor.document.name,
             updatedAt: Date.now(),
             document: serialized,
-          }).then(() => editor.clearDirty());
+          })
+            .then(() => {
+              editor.clearDirty();
+              console.log('Project autosaved:', editor.document.name);
+            })
+            .catch((error) => {
+              console.error('Failed to autosave project:', error);
+            });
         }
       }, 2000);
     });
@@ -72,23 +79,52 @@ function EditorLayout({ canvasRef }: { canvasRef: React.RefObject<HTMLCanvasElem
   const handleSaveProject = useCallback(async () => {
     const editor = getEditor();
     if (!editor) return;
-    const serialized = serializeDocument(editor.document);
-    await saveProject({
-      id: editor.document.id,
-      name: editor.document.name,
-      updatedAt: Date.now(),
-      document: serialized,
-    });
-    editor.clearDirty();
+    try {
+      let projectName = editor.document.name;
+      
+      if (projectName === 'Untitled' || !projectName.trim()) {
+        const newName = prompt('Enter a name for your project:', projectName);
+        if (newName === null) return;
+        if (!newName.trim()) {
+          alert('Project name cannot be empty');
+          return;
+        }
+        projectName = newName.trim();
+        editor.document.name = projectName;
+      }
 
-    const json = documentToJson(editor.document);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${editor.document.name}.simplpixl`;
-    a.click();
-    URL.revokeObjectURL(url);
+      const serialized = serializeDocument(editor.document);
+      await saveProject({
+        id: editor.document.id,
+        name: projectName,
+        updatedAt: Date.now(),
+        document: serialized,
+      });
+      editor.clearDirty();
+      console.log('Project saved to database:', projectName);
+      alert(`Project "${projectName}" saved successfully!`);
+    } catch (error) {
+      console.error('Failed to save project:', error);
+      alert('Failed to save project. Check console for details.');
+    }
+  }, [getEditor]);
+
+  const handleExportJson = useCallback(async () => {
+    const editor = getEditor();
+    if (!editor) return;
+    try {
+      const json = documentToJson(editor.document);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${editor.document.name}.simplpixl`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to export JSON:', error);
+      alert('Failed to export project. Check console for details.');
+    }
   }, [getEditor]);
 
   const handleNewProject = useCallback(() => {
@@ -115,6 +151,7 @@ function EditorLayout({ canvasRef }: { canvasRef: React.RefObject<HTMLCanvasElem
           onExportPng={handleExportPng}
           onImportPng={handleImportPng}
           onSaveProject={handleSaveProject}
+          onExportJson={handleExportJson}
           onOpenProjects={() => setShowProjectBrowser(true)}
         />
       </header>

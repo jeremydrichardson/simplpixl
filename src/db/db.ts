@@ -28,9 +28,23 @@ export class SimplPixlDB extends Dexie {
 
 export const db = new SimplPixlDB();
 
+db.on('ready', () => {
+  console.log('Database ready');
+});
+
+db.on('blocked', () => {
+  console.error('Database blocked - another tab may be using an older version');
+});
+
+db.on('versionchange', () => {
+  console.warn('Database version changed in another tab');
+});
+
 export async function saveProject(record: ProjectRecord): Promise<void> {
+  console.log('Saving project to database:', record.id, record.name);
   await db.projects.put(record);
   await db.recents.put({ projectId: record.id, lastOpenedAt: Date.now() });
+  console.log('Project saved successfully');
 }
 
 export async function getRecentProjects(limit = 10): Promise<ProjectRecord[]> {
@@ -44,7 +58,10 @@ export async function getRecentProjects(limit = 10): Promise<ProjectRecord[]> {
 }
 
 export async function getAllProjects(): Promise<ProjectRecord[]> {
-  return db.projects.orderBy('updatedAt').reverse().toArray();
+  console.log('Fetching all projects from database');
+  const projects = await db.projects.orderBy('updatedAt').reverse().toArray();
+  console.log('Found projects:', projects.length);
+  return projects;
 }
 
 export async function deleteProject(id: string): Promise<void> {
