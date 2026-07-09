@@ -12,15 +12,29 @@ interface ProjectBrowserProps {
 
 export function ProjectBrowser({ onOpen, onNew, onClose }: ProjectBrowserProps) {
   const [projects, setProjects] = useState<ProjectRecord[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getAllProjects().then(setProjects);
+    getAllProjects()
+      .then((projects) => {
+        console.log('Loaded projects:', projects.length);
+        setProjects(projects);
+      })
+      .catch((err) => {
+        console.error('Failed to load projects:', err);
+        setError('Failed to load projects. Check console for details.');
+      });
   }, []);
 
   const handleOpen = async (project: ProjectRecord) => {
-    await loadProject(project.id);
-    onOpen(deserializeDocument(project.document));
-    onClose();
+    try {
+      await loadProject(project.id);
+      onOpen(deserializeDocument(project.document));
+      onClose();
+    } catch (err) {
+      console.error('Failed to open project:', err);
+      setError('Failed to open project. Check console for details.');
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -35,8 +49,9 @@ export function ProjectBrowser({ onOpen, onNew, onClose }: ProjectBrowserProps) 
         <button type="button" className={styles.newButton} onClick={onNew}>
           New Project
         </button>
+        {error && <div style={{ color: 'red', padding: '10px' }}>{error}</div>}
         <ul className={styles.list}>
-          {projects.length === 0 && (
+          {projects.length === 0 && !error && (
             <li className={styles.empty}>
               No saved projects yet. Edits autosave locally after you start drawing.
             </li>
