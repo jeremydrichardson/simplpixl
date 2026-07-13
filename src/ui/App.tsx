@@ -6,6 +6,7 @@ import { EditorProvider, useEditorContext } from '../hooks/useEditor';
 import { useEditorStore } from '../store/editorStore';
 import { CanvasSurface } from './CanvasSurface';
 import { Toolbar } from './Toolbar';
+import { ToolsBar } from './ToolsBar';
 import { PalettePanel } from './PalettePanel';
 import { LayersPanel } from './LayersPanel';
 import { ProjectBrowser } from './ProjectBrowser';
@@ -156,6 +157,7 @@ function EditorLayout({ canvasRef }: { canvasRef: React.RefObject<HTMLCanvasElem
         />
       </header>
       <div className={styles.main}>
+        <ToolsBar />
         <div className={styles.editorArea}>
           <CanvasSurface canvasRef={canvasRef} />
         </div>

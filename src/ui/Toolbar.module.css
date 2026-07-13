@@ -13,7 +13,6 @@
   gap: 6px;
 }
 
-.toolButton,
 .button {
   padding: 6px 12px;
   background: #2a2a2a;
@@ -24,36 +23,8 @@
   cursor: pointer;
 }
 
-.toolButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-}
-
-.toolIcon {
-  display: block;
-}
-
-.toolButton:hover,
 .button:hover {
   background: #333;
-}
-
-.toolButton.active {
-  background: #4a6fa5;
-  border-color: #5a8fd5;
-}
-
-.toolButton:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.toolButton:disabled:hover {
-  background: #2a2a2a;
 }
 
 .zoomButton {
