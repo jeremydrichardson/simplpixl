@@ -1,13 +1,19 @@
+import {
+  PiArrowCounterClockwise,
+  PiEraser,
+  PiPaintBucket,
+  PiPencilLineBold,
+} from 'react-icons/pi';
+import type { IconType } from 'react-icons';
 import { useEditorStore } from '../store/editorStore';
 import { useEditorContext } from '../hooks/useEditor';
 import type { ToolId } from '../editor/Editor';
-import { EraserIcon, FillIcon, PencilIcon, UndoIcon } from './ToolIcons';
 import styles from './Toolbar.module.css';
 
-const TOOLS: { id: ToolId; label: string; shortcut: string; Icon: typeof PencilIcon }[] = [
-  { id: 'pencil', label: 'Pencil', shortcut: 'B', Icon: PencilIcon },
-  { id: 'eraser', label: 'Eraser', shortcut: 'E', Icon: EraserIcon },
-  { id: 'fill', label: 'Fill', shortcut: 'G', Icon: FillIcon },
+const TOOLS: { id: ToolId; label: string; shortcut: string; Icon: IconType }[] = [
+  { id: 'pencil', label: 'Pencil', shortcut: 'B', Icon: PiPencilLineBold },
+  { id: 'eraser', label: 'Eraser', shortcut: 'E', Icon: PiEraser },
+  { id: 'fill', label: 'Fill', shortcut: 'G', Icon: PiPaintBucket },
 ];
 
 interface ToolbarProps {
@@ -61,7 +67,7 @@ export function Toolbar({
             title={`${tool.label} (${tool.shortcut})`}
             aria-label={`${tool.label} (${tool.shortcut})`}
           >
-            <tool.Icon className={styles.toolIcon} />
+            <tool.Icon className={styles.toolIcon} size={16} />
           </button>
         ))}
         <button
@@ -72,7 +78,7 @@ export function Toolbar({
           title="Undo (Ctrl/Cmd+Z)"
           aria-label="Undo (Ctrl/Cmd+Z)"
         >
-          <UndoIcon className={styles.toolIcon} />
+          <PiArrowCounterClockwise className={styles.toolIcon} size={16} />
         </button>
       </div>
 

@@ -5,7 +5,9 @@
   "type": "module",
   "packageManager": "pnpm@10.34.4",
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "scripts": {
     "dev": "vite",
@@ -19,6 +21,7 @@
     "dexie": "^4.4.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-icons": "^5.7.0",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
